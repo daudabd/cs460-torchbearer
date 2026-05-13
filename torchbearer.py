@@ -32,9 +32,17 @@ def explain_problem():
         Your Part 1 README answers, written as a string.
         Must match what you wrote in README Part 1.
 
-    TODO
     """
-    return "TODO"
+    return (
+        "- Although one run of the single-source shortest-path algorithm from S gives the minimum prices to each of the nodes "
+        "it does not give the optimal ORDER in which to visit the relic chambers․ "
+        "Dijkstra's algorithm does not give any method for comparing permutations․\n\n"
+        "- Once all the inter-location travel costs have been computed "
+        "the only remaining design decision is that of the ordering of the relic chambers "
+        "that minimizes the total fuel cost of traveling from S through all the relic chambers to T․\n\n"
+        "- Solving this ordering problem requires searching "
+        "all possible orderings or pruning large numbers of them․"
+    )
 
 
 # =============================================================================
@@ -56,7 +64,11 @@ def select_sources(spawn, relics, exit_node):
 
     TODO
     """
-    pass
+    sources = set()
+    sources.add(spawn)
+    for r in relics:
+        sources.add(r)
+    return list(sources)
 
 
 def run_dijkstra(graph, source):
@@ -75,7 +87,19 @@ def run_dijkstra(graph, source):
 
     TODO
     """
-    pass
+    dist = {node: float('inf') for node in graph}
+    dist[source] = 0
+    heap = [(0, source)]
+    while heap:
+        cost, u = heapq.heappop(heap)
+        if cost > dist[u]:
+            continue
+        for v, weight in graph[u]:
+            new_cost = dist[u] + weight
+            if new_cost < dist[v]:
+                dist[v] = new_cost
+                heapq.heappush(heap, (new_cost, v))
+    return dist
 
 
 def precompute_distances(graph, spawn, relics, exit_node):
@@ -95,7 +119,11 @@ def precompute_distances(graph, spawn, relics, exit_node):
 
     TODO
     """
-    pass
+    sources = select_sources(spawn, relics, exit_node)
+    dist_table = {}
+    for src in sources:
+        dist_table[src] = run_dijkstra(graph, src)
+    return dist_table
 
 
 # =============================================================================
