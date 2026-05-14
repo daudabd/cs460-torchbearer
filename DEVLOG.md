@@ -1,7 +1,7 @@
 # Development Log – The Torchbearer
 
-**Student Name:** ************\_\_\_************
-**Student ID:** ************\_\_\_************
+**Student Name:** Daud Abdinasir\*\*
+**Student ID:** 129393274\*\*
 
 > Instructions: Write at least four dated entries. Required entry types are marked below.
 > Two to five sentences per entry is sufficient. Write entries as you go, not all in one
@@ -38,18 +38,28 @@ This also keeps the precomputation step efficient‚ as we do not need to run Di
 
 ---
 
-## Entry 3 – [Date]: [Short description]
+## Entry 3 – [05/14/2026]: [Bug in Source Selection]
 
-_Your entry here._
+I thought I needed to run Dijkstra from all graph nodes including
+exit node T but later realized T was only a destination as the
+Torchbearer never left T․ Removing T from selected_sources() eliminated
+the redundant second run and kept dist_table clean․
+This assumption turned out wrong when caught early before causing routing issues․
 
 ---
 
-## Entry 4 – [Date]: Post-Implementation Reflection
+## Entry 4 – [05/14/2026]: Post-Implementation Reflection
 
 > Required. Written after your implementation is complete. Describe what you would
 > change or improve given more time.
 
-_Your entry here._
+This implementation passes the 5 tests provided․ Given more time‚
+I would improve the lower bound of \_explore() from the cost of a
+single next leg to the total cost of the tour including the cost
+of getting to T․ This would prune many more branches‚ and the algorithm
+would be more efficient for large relic sets․ I would also like to add
+stress tests with 8+ relics‚ to measure how much the pruning actually
+cuts down the search space in practice․
 
 ---
 
@@ -59,12 +69,12 @@ _Your entry here._
 
 | Part                           | Estimated Hours |
 | ------------------------------ | --------------- |
-| Part 1: Problem Analysis       |                 |
-| Part 2: Precomputation Design  |                 |
-| Part 3: Algorithm Correctness  |                 |
-| Part 4: Search Design          |                 |
-| Part 5: State and Search Space |                 |
-| Part 6: Pruning                |                 |
-| Part 7: Implementation         |                 |
-| README and DEVLOG writing      |                 |
-| **Total**                      |                 |
+| Part 1: Problem Analysis       | 0.5             |
+| Part 2: Precomputation Design  | 1.5             |
+| Part 3: Algorithm Correctness  | 1.0             |
+| Part 4: Search Design          | 1.0             |
+| Part 5: State and Search Space | 1.5             |
+| Part 6: Pruning                | 2.0             |
+| Part 7: Implementation         | 2.5             |
+| README and DEVLOG writing      | 1.5             |
+| **Total**                      | **11.5**        |
