@@ -140,7 +140,17 @@ def dijkstra_invariant_check():
 
     TODO
     """
-    return "TODO"
+    return "Part 3a: After S is finalized‚ dist[v] is the true minimum-cost"
+    "path from s to v after S․ Since no other node can be added to S‚"
+    "dist[v] cannot be improved․ Before S is finalized‚"
+    "dist[u] is the best-known target distance with only finalized nodes used as intermediate nodes․"
+    "This is a loose upper bound that can be improved․ \n\n" 
+    "Part 3b: Initialization vacuously holds as S is empty and dist[source]=0 while others are infinities․"
+    "Maintenance holds since u‚ the min-dist node‚ has been finalized‚"
+    "and no nonnegative edge can lead to a reduction of dist[u] via nonfinalized nodes․"
+    "Termination: every reachable node has its true shortest distance confirmed․ \n\n"  
+    "Part 3c: The planner picks some ordering of relics that appears to be" 
+    "the cheapest according to the dist_table but costs more or is impossible in the real dungeon․"
 
 
 # =============================================================================
@@ -157,7 +167,13 @@ def explain_search():
 
     TODO
     """
-    return "TODO"
+    return "Why Greedy Fails: Greedy always chooses the closest unvisited relic‚" 
+    "a local-minimum heuristic‚ while the optimal solution might just have to take a much bigger step․" 
+    "For example‚ assume dist(S‚B)=1‚ dist(B‚C)=100‚ dist(S‚C)=2‚ dist(C‚B)=1․" 
+    "Greedy visits B with cost 1+100=101․ The optimal solution visits C and B in that order with cost 2+1=3․" 
+    "Greedy fails because a low-cost first leg can lead to high-cost latter legs after a few․"
+    "What the Algorithm Must Explore: all orders of visiting the relic chambers‚" 
+    "pruning branches that cannot beat the current best solution․"
 
 
 # =============================================================================
@@ -184,7 +200,12 @@ def find_optimal_route(dist_table, spawn, relics, exit_node):
 
     TODO
     """
-    pass
+    best = [float('inf'), []]
+    relics_remaining = set(relics)
+    relics_visited_order = []
+    _explore(dist_table, spawn, relics_remaining, relics_visited_order,
+             0.0, exit_node, best)
+    return (best[0], best[1])
 
 
 def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
@@ -216,7 +237,40 @@ def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
     explaining why it is safe (cannot skip the optimal solution).
     This comment is graded.
     """
-    pass
+    # Lower-bound pruning: the cheapest possible next leg gives a lower
+    # bound on remaining cost. If cost_so_far + that bound already meets
+    # or exceeds best[0], no complete route from this state can improve it.
+    if relics_remaining:
+        sources = dist_table.get(current_loc, {})
+        min_next = min(sources.get(r, float('inf')) for r in relics_remaining)
+        # PRUNING SAFETY: This lower bound only charges for one mandatory leg
+        # and ignores all subsequent legs, so it never overestimates remaining
+        # cost. Any complete route from here costs at least cost_so_far +
+        # min_next, so pruning when that meets or exceeds best[0] is safe.
+        if cost_so_far + min_next >= best[0]:
+            return
+
+    if not relics_remaining:
+        cost_to_exit = dist_table.get(current_loc, {}).get(exit_node, float('inf'))
+        total_cost = cost_so_far + cost_to_exit
+        if total_cost < best[0]:
+            best[0] = total_cost
+            best[1] = list(relics_visited_order)
+        return
+
+    for relic in list(relics_remaining):
+        travel_cost = dist_table.get(current_loc, {}).get(relic, float('inf'))
+        if travel_cost == float('inf'):
+            continue
+        new_cost = cost_so_far + travel_cost
+        if new_cost >= best[0]:
+            continue
+        relics_remaining.remove(relic)
+        relics_visited_order.append(relic)
+        _explore(dist_table, relic, relics_remaining, relics_visited_order,
+                 new_cost, exit_node, best)
+        relics_remaining.add(relic)
+        relics_visited_order.pop()
 
 
 # =============================================================================
@@ -240,7 +294,8 @@ def solve(graph, spawn, relics, exit_node):
 
     TODO
     """
-    pass
+    dist_table = precompute_distances(graph, spawn, relics, exit_node)
+    return find_optimal_route(dist_table, spawn, relics, exit_node)
 
 
 # =============================================================================
