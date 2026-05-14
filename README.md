@@ -124,30 +124,30 @@
 > Document the three components of your search state as a table.
 > Variable names here must match exactly what you use in torchbearer.py.
 
-| Component                | Variable name in code | Data type | Description |
-| ------------------------ | --------------------- | --------- | ----------- |
-| Current location         |                       |           |             |
-| Relics already collected |                       |           |             |
-| Fuel cost so far         |                       |           |             |
+| Component                | Variable name in code | Data type      | Description                                                                         |
+| ------------------------ | --------------------- | -------------- | ----------------------------------------------------------------------------------- |
+| Current location         | `current_loc`         | node (str/int) | The node the Torchbearer is currently at                                            |
+| Relics already collected | `relics_remaining`    | `set`          | The set of relics not yet visited — a relic is collected when removed from this set |
+| Fuel cost so far         | `cost_so_far`         | `float`        | Accumulated fuel spent from spawn to current location                               |
 
 ### Part 5b: Data Structure for Visited Relics
 
 > Fill in the table.
 
-| Property                                    | Your answer      |
-| ------------------------------------------- | ---------------- |
-| Data structure chosen                       |                  |
-| Operation: check if relic already collected | Time complexity: |
-| Operation: mark a relic as collected        | Time complexity: |
-| Operation: unmark a relic (backtrack)       | Time complexity: |
-| Why this structure fits                     |                  |
+| Property                                    | Your answer                                                                                                       |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Data structure chosen                       | `set`                                                                                                             |
+| Operation: check if relic already collected | Time complexity: O(1)                                                                                             |
+| Operation: mark a relic as collected        | Time complexity: O(1) — `relics_remaining.remove(relic)`                                                          |
+| Operation: unmark a relic (backtrack)       | Time complexity: O(1) — `relics_remaining.add(relic)`                                                             |
+| Why this structure fits                     | All three operations are O(1) via hashing, making backtracking cheap and membership checks during pruning instant |
 
 ### Part 5c: Worst-Case Search Space
 
 > Two bullets.
 
-- **Worst-case number of orders considered:** _Your answer (in terms of k)._
-- **Why:** _One-line justification._
+- **Worst-case number of orders considered:** k! where k = |M|
+- **Why:** Without pruning‚ at each step‚ the algorithm can branch on each remaining relic‚ so the search space has a branching factor of k · (k−1) · ․․․ · 1․
 
 ---
 
@@ -165,15 +165,16 @@
 
 > Three bullets.
 
-- **What information is available at the current state:** _Your answer here._
-- **What the lower bound accounts for:** _Your answer here._
-- **Why it never overestimates:** _Your answer here._
+- **What information is available at the current state:** `best[0]` keeps track of the full fuel cost of the cheapest valid route found so far‚ and `best[1]` stores the order of the relics in that route․
+- **What the lower bound accounts for:** At every recursive call‚ we compare cost_so_far + an estimate of the remaining cost to best[0]․
+- **Why it never overestimates:** Any branch where the partial cost is equal to or greater than best[0] is discarded because no complete route down that branch can improve the current best․
 
 ### Part 6c: Pruning Correctness
 
 > One to two bullets. Explain why pruning is safe.
 
-- _Your answer here._
+- If cost_so_far + lower_bound >= best[0] then all complete routes from this state have cost greater than or equal to best[0]․
+- Hence we are safe in pruning this branch‚ since the optimal solution would either have already been encountered (and so recorded)‚ or it would not travel through this state․
 
 ---
 
